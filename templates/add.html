@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+    <h1>Добавление нового котика</h1><br>
+    <form method="post" enctype="multipart/form-data">
+        <h5>Порода</h5>
+        <input type="text" name="breed" id="breed" class="form-control">
+        <h5>Фото котика</h5>
+        <input type="file" name="img" id="img" class="form-control">
+        <h5>Имя котика</h5>
+        <input type="text" name="name" id="name" class="form-control">
+        <h5>Описание</h5>
+        <textarea type="text" name="description" id="description" class="form-control"></textarea>
+        <h5>Возраст</h5>
+        <input type="text" name="age" id="age" class="form-control"><br>
+        <input type="submit" class="btn btn-success">
+    </form>
+    {% if file %}
+        <div class="container">
+            <img src="data:image/png;base64,{{ file }}">
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
