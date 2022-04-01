@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}
+{{ cat.name }}
+{% endblock %}
+
+{% block body %}
+    <h1>{{ cat.name }}</h1>
+    <div class="alert alert-info" style="display: inline-block; width: 100%">
+        <div style="float: left">
+            <img src="data:image/png;base64,{{ img }}" class="rounded">
+        </div>
+        <div style="float: left; margin-left: 30px">
+            <h3>Порода: </h3><p>{{ cat.breed }}</p>
+            <h3>Возраст: </h3><p>{{ cat.age }} месяцев</p>
+            <h3>Описание:</h3>
+            <p>{{ cat.description }}</p>
+        </div>
+    </div>
+
+{% endblock %}

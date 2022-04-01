@@ -1,3 +1,26 @@
 {% extends 'base.html' %}
-{% block title %} Главная страница {% endblock %}
-{% block body %} <p>Cats</p> {% endblock %}
+{% block title %} Наши котики {% endblock %}
+{% block body %}
+    <h1>Самый пушистый каталог</h1>
+    <div style="display: inline-block" >
+        <form method="post">
+            <input type="text" placeholder="Поиск по параметрам" name="query" >
+            <input type="submit" class="btn btn-primary"  style="margin: 5px">
+        </form>
+    </div>
+    {% for cat in cats.items %}
+        <div class="alert alert-info">
+            <h3>{{ cat.name }}</h3>
+            <p>{{ cat.breed }}, {{ cat.age }} месяцев</p>
+            <a href="/cats/cat_{{ cat.id }}" class="btn btn-success">Подробнее</a>
+        </div>
+    {% endfor %}
+{% if cats.has_prev %}
+    <a href="{{ url_for('cats', page=cats.prev_num) }}" class="btn btn-primary">Предыдущая страница</a>
+{% else %}<button type="button" class="btn btn-primary" disabled>Предыдущая страница</button>
+{% endif %}
+{% if cats.has_next %}
+    <a href="{{ url_for('cats', page=cats.next_num) }}" class="btn btn-primary">Следующая страница</a>
+{% else %}<button type="button" class="btn btn-primary" disabled>Следующая страница</button>
+{% endif %}
+{% endblock %}
