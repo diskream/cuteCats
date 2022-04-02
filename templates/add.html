@@ -3,6 +3,17 @@
 {% block body %}
 <div class="container">
     <h1>Добавление нового котика</h1><br>
+    {% if flag == "bad_image" %}
+        <div class="alert alert-warning">
+            <h2>Расширение изображения не поддерживается</h2>
+            <p>Для загрузки доступно только изображение с расширением .png</p>
+        </div>
+    {% elif flag == "error" %}
+        <div class="alert alert-warning">
+            <h2>При загрузке данных возникла ошибка</h2>
+            <p>Пожалуйста, проверьте введенные данные и попробуйте снова</p>
+        </div>
+    {% endif %}
     <form method="post" enctype="multipart/form-data">
         <h5>Порода</h5>
         <input type="text" name="breed" id="breed" class="form-control">
@@ -16,10 +27,5 @@
         <input type="text" name="age" id="age" class="form-control"><br>
         <input type="submit" class="btn btn-success">
     </form>
-    {% if file %}
-        <div class="container">
-            <img src="data:image/png;base64,{{ file }}">
-        </div>
-    {% endif %}
 </div>
 {% endblock %}
