@@ -21,7 +21,7 @@ with app.app_context():
 
 def allowed_file(filename):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ['png']
+           filename.rsplit('.', 1)[1].lower() in ['png', 'jpg']
 
 
 @app.template_global()
@@ -43,9 +43,9 @@ def hello_world():  # put application's code here
 def cats(page=1):
     if request.method == "POST":
         return redirect(f'/search/page_1?query={request.form["query"]}')
-    sort = request.args.get('sort')
+    sort, how = request.args.get('sort'), request.args.get('how')
     all_cats = CatsModel.query
-    all_cats = sort_cats(sort, all_cats).paginate(page, PAGINATION, False)
+    all_cats = sort_cats(sort, how, all_cats).paginate(page, PAGINATION, False)
     return render_template('cats.html', cats=all_cats)
 
 
@@ -54,20 +54,19 @@ def search(page=1):
     if request.method == "POST":
         return redirect(f'/search/page_1?sort=relevance&query={request.form["query"]}')
     query = request.args.get('query').replace(' ', '|')
-    sort = request.args.get('sort')
+    sort, how = request.args.get('sort'), request.args.get('how')
     filtered_cats = CatsModel.query.filter(CatsModel.__ts_vector__.match(query, postgresql_regconfig='russian'))
-    print(CatsModel.query.filter(CatsModel.__ts_vector__.match(query, postgresql_regconfig='russian')))
-    filtered_cats = sort_cats(sort, filtered_cats).paginate(page, PAGINATION, False)
+    filtered_cats = sort_cats(sort, how, filtered_cats).paginate(page, PAGINATION, False)
     return render_template('cats.html', cats=filtered_cats if filtered_cats.total != 0 else None)
 
 
-def sort_cats(sort_type, cats_to_sort):
+def sort_cats(sort_type, how, cats_to_sort):
     if sort_type == 'breed':
-        return cats_to_sort.order_by(CatsModel.breed)
+        return cats_to_sort.order_by(CatsModel.breed if how is None or how == 'asc' else CatsModel.breed.desc())
     elif sort_type == 'age':
-        return cats_to_sort.order_by(CatsModel.age)
+        return cats_to_sort.order_by(CatsModel.age if how is None or how == 'asc' else CatsModel.age.desc())
     else:
-        return cats_to_sort
+        return cats_to_sort.order_by(CatsModel.__ts_vector__)
 
 
 @app.route('/cats/cat_<int:id>')

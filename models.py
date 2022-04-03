@@ -2,7 +2,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.types import TypeDecorator
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import TSVECTOR
+
 db = SQLAlchemy()
+
 
 class TSVector(TypeDecorator):
     impl = TSVECTOR
@@ -14,6 +16,7 @@ def create_tsvector(*args):
         exp += ' ' + e
     return func.to_tsvector('russian', exp)
 
+
 class CatsModel(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     breed = db.Column(db.String(30))
@@ -24,7 +27,7 @@ class CatsModel(db.Model):
 
     __ts_vector__ = db.Column(TSVector(), db.Computed(
         "to_tsvector('russian', breed || ' ' || name || ' ' || description || ' ' || age::text)",
-    persisted=True))
+        persisted=True))
 
     __table_args__ = (db.Index('ix_cats_model___ts_vector__', __ts_vector__, postgresql_using='gin'),)
 

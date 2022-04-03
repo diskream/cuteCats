@@ -18,6 +18,8 @@
             </ul>
           </li>
         </ul>
+        <a class="btn btn-light" href="{{ modify_query(how="asc") }}" style="margin: 5px">По возрастанию</a>
+        <a class="btn btn-light" href="{{ modify_query(how="desc") }}" role="button">По убыванию</a>
       </nav>
     </div>
     {% if cats %}
@@ -39,6 +41,7 @@
     <a href="{{ url_for('cats', page=cats.prev_num) }}" class="btn btn-primary">Предыдущая страница</a>
 {% else %}<button type="button" class="btn btn-primary" disabled>Предыдущая страница</button>
 {% endif %}
+
 {% if cats.has_next %}
     <a href="{{ url_for('cats', page=cats.next_num) }}" class="btn btn-primary">Следующая страница</a>
 {% else %}<button type="button" class="btn btn-primary" disabled>Следующая страница</button>
