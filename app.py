@@ -5,7 +5,10 @@ from io import BytesIO
 from PIL import Image
 from models import db, CatsModel
 from werkzeug.urls import url_encode
+from sqlalchemy.sql.expression import func
+from re import sub
 
+#host.docker.internal
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@host.docker.internal/catsdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -35,8 +38,9 @@ def modify_query(**new_values):
 
 
 @app.route('/')
-def hello_world():  # put application's code here
-    return render_template('index.html')
+def main():
+    cat = db.session.query(CatsModel).order_by(func.random()).first()
+    return render_template('index.html', cat=cat, img=cat.img.decode('utf-8'))
 
 
 @app.route('/cats/page_<int:page>', methods=['POST', 'GET'])
@@ -53,7 +57,10 @@ def cats(page=1):
 def search(page=1):
     if request.method == "POST":
         return redirect(f'/search/page_1?sort=relevance&query={request.form["query"]}')
-    query = request.args.get('query').replace(' ', '|')
+    query = request.args.get('query')
+    if ' ' in query:
+        query = sub(' +', ' ', query)
+        query = query.rstrip().replace(' ', '|')
     sort, how = request.args.get('sort'), request.args.get('how')
     filtered_cats = CatsModel.query.filter(CatsModel.__ts_vector__.match(query, postgresql_regconfig='russian'))
     filtered_cats = sort_cats(sort, how, filtered_cats).paginate(page, PAGINATION, False)
@@ -73,29 +80,14 @@ def sort_cats(sort_type, how, cats_to_sort):
 def get_cat(id):
     print(CatsModel.query.filter_by())
     cat = CatsModel.query.get(id)
-    return render_template('cat_description.html', cat=cat, img=resize_image(cat.img, (300, 250)))
+    return render_template('cat_description.html', cat=cat, img=cat.img.decode('utf-8')) # resize_image(cat.img, (350, 280)))
 
 
 @app.route('/add', methods=['POST', 'GET'])
 def add_cat():
     if request.method == 'POST':
-        breed = request.form['breed']
-        img = request.files['img']
-        name = request.form['name']
-        description = request.form['description']
-        age = request.form['age']
-        if not allowed_file(img.filename):
-            return render_template('add.html', flag='bad_image')
-        params = {
-            'breed': breed,
-            'img': base64.b64encode(img.read()),
-            'name': name,
-            'description': description,
-            'age': age
-        }
-        cats = CatsModel(**params)
         try:
-            db.session.add(cats)
+            db.session.add(CatsModel(**get_params(request)))
             db.session.commit()
             return render_template('add.html', flag=None)
         except Exception as _ex:
@@ -103,6 +95,48 @@ def add_cat():
             return render_template('add.html', flag='error')
     else:
         return render_template('add.html')
+
+
+@app.route('/update/cat_<int:id>', methods=['POST', 'GET'])
+def update_cat(id):
+    cat = CatsModel.query.get(id)
+    img = cat.img.decode('utf-8')
+    if request.method == "POST":
+        try:
+            db.session.query(CatsModel).filter(CatsModel.id == id).update(get_params(request))
+            db.session.commit()
+            return redirect(f'/cats/cat_{id}')
+        except Exception as _ex:
+            print(_ex)
+            return render_template('update.html', cat=cat, img=img, flag='error')
+    else:
+        return render_template('update.html', cat=cat, img=img)
+
+
+def get_params(req):
+    breed = req.form['breed']
+    img = req.files['img']
+    name = req.form['name']
+    description = req.form['description']
+    age = req.form['age']
+    if not allowed_file(img.filename):
+        return render_template('add.html', flag='bad_image')
+    return {
+            'breed': breed,
+            'img': base64.b64encode(img.read()),
+            'name': name,
+            'description': description,
+            'age': age
+        }
+
+@app.route('/delete/cat_<int:id>', methods=['POST', 'GET'])
+def delete_cat(id):
+    if request.method == "POST":
+        CatsModel.query.filter_by(id=id).delete()
+        db.session.commit()
+        return redirect('/cats')
+    else:
+        return render_template('delete.html')
 
 
 def resize_image(img: bytes, size: tuple) -> str:

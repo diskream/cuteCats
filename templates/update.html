@@ -1,10 +1,22 @@
-{% extends 'base.html' %}
+{% extends 'add.html' %}
 {% block title %}
-    Добавление пушистика
+    Обновление {{ cat.name }}
 {% endblock %}
 {% block body %}
+<h1>{{ cat.name }}</h1>
+<div class="alert alert-info" style="display: inline-block; width: 100%">
+    <div style="float: left">
+        <img src="data:image/png;base64,{{ img }}" width="400" height="300" class="rounded">
+    </div>
+    <div style="float: left; margin-left: 30px">
+        <h3>Порода: </h3><p>{{ cat.breed }}</p>
+        <h3>Возраст: </h3><p>{{ cat.age }} месяцев</p>
+        <h3>Описание:</h3>
+        <p>{{ cat.description }}</p>
+    </div>
+</div>
 <div class="container">
-    <h1>Добавление нового котика</h1><br>
+    <h1>Изменение инфорамции котике</h1><br>
     {% if flag == "bad_image" %}
         <div class="alert alert-warning">
             <h2>Расширение изображения не поддерживается</h2>
@@ -18,15 +30,15 @@
     {% endif %}
     <form method="post" enctype="multipart/form-data">
         <h5>Порода</h5>
-        <input type="text" name="breed" id="breed" class="form-control">
+        <input type="text" name="breed" id="breed" placeholder="{{ cat.breed }}" class="form-control">
         <h5>Фото котика</h5>
         <input type="file" name="img" id="img" class="form-control">
         <h5>Имя котика</h5>
-        <input type="text" name="name" id="name" class="form-control">
+        <input type="text" name="name" id="name" placeholder="{{ cat.name }}" class="form-control">
         <h5>Описание</h5>
-        <textarea type="text" name="description" id="description" class="form-control"></textarea>
+        <textarea type="text" name="description" id="description" placeholder="{{ cat.description }}" class="form-control"></textarea>
         <h5>Возраст</h5>
-        <input type="text" name="age" id="age" class="form-control"><br>
+        <input type="text" name="age" id="age" placeholder="{{ cat.age }}" class="form-control"><br>
         <input type="submit" class="btn btn-success">
     </form>
 </div>

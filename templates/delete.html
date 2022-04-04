@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}
+    Удаление котика
+{% endblock %}
+{% block body %}
+    <div class="alert alert-danger">
+        <h1>О нет! Вы точно хотите убрать это милое создание из нашей базы?</h1>
+        <p>Обратного пути не будет!</p>
+        <form method="post">
+            <button class="btn btn-danger">Удалить</button>
+            <a class="btn btn-primary" href="/">Одуматься и вернуться</a>
+        </form>
+    </div>
+{% endblock %}

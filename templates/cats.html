@@ -5,7 +5,7 @@
     <div class="container" style="margin: 5px">
       <nav class="navbar navbar-expand-sm navbar-light">
         <form method="post" style="display: inline">
-            <input type="text" placeholder="Поиск по параметрам" name="query" >
+            <input type="text" placeholder="Поиск по параметрам" name="query" style="width: 550px" >
             <input type="submit" class="btn btn-primary"  style="margin: 5px">
         </form>
         <ul class="navbar-nav">
@@ -25,11 +25,22 @@
     {% if cats %}
         {% for cat in cats.items %}
             <div class="alert alert-info">
-                <h3>{{ cat.name }}</h3>
-                <p>{{ cat.breed }}, {{ cat.age }} месяцев</p>
-                <a href="/cats/cat_{{ cat.id }}" class="btn btn-success">Подробнее</a>
+                <div>
+                    <h3>{{ cat.name }}</h3>
+                    <p>{{ cat.breed }}, {{ cat.age }} месяцев</p>
+                </div>
+                <div>
+                    <a href="/cats/cat_{{ cat.id }}" class="btn btn-success">Подробнее</a>
+                    <a href="/delete/cat_{{ cat.id }}" class="btn btn-danger" style="float: right" >Удалить</a>
+                    <a href="/update/cat_{{ cat.id }}" class="btn btn-warning" style="float: right; margin-inline: 5px" >Обновить</a>
+                </div>
             </div>
         {% endfor %}
+    {% elif flag=="no_query" %}
+        <div class="alert alert-warning">
+            <h2>Поисковый запрос пустой</h2>
+            <p>Пожалуйста, попробуйте введите запрос</p>
+        </div>
     {% else %}
         <div class="alert alert-warning">
             <h2>Мы не нашли похожих котиков :(</h2>
@@ -38,12 +49,12 @@
         </div>
     {% endif %}
 {% if cats.has_prev %}
-    <a href="{{ url_for('cats', page=cats.prev_num) }}" class="btn btn-primary">Предыдущая страница</a>
+    <a href="{{ url_for('cats' if request.endpoint == 'cats' else 'search', page=cats.prev_num) }}" class="btn btn-primary">Предыдущая страница</a>
 {% else %}<button type="button" class="btn btn-primary" disabled>Предыдущая страница</button>
 {% endif %}
 
 {% if cats.has_next %}
-    <a href="{{ url_for('cats', page=cats.next_num) }}" class="btn btn-primary">Следующая страница</a>
+    <a href="{{ url_for('cats' if request.endpoint == 'cats' else 'search', page=cats.next_num, **request.args.to_dict()) }}" class="btn btn-primary">Следующая страница</a>
 {% else %}<button type="button" class="btn btn-primary" disabled>Следующая страница</button>
 {% endif %}
 {% endblock %}
