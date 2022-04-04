@@ -5,7 +5,7 @@ services:
     image: postgres:14
     env_file: .env
     volumes:
-      - .:/data
+      - .:/data:/var/lib/postgresql/data
     expose:
       - 5432
   app:
@@ -17,3 +17,6 @@ services:
     depends_on:
       - db
     entrypoint: ["python3.9", "app.py"]
+
+volumes:
+  data:
