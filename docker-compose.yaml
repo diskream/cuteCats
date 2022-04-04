@@ -5,7 +5,8 @@ services:
     image: postgres:14
     env_file: .env
     volumes:
-      - .:/data:/var/lib/postgresql/data
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
     expose:
       - 5432
   app:
@@ -16,7 +17,4 @@ services:
       - .:/app
     depends_on:
       - db
-    entrypoint: ["python3.9", "app.py"]
-
-volumes:
-  data:
+    entrypoint: [ "python3.9", "app.py" ]
