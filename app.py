@@ -7,7 +7,7 @@ from models import db, CatsModel
 from werkzeug.urls import url_encode
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@localhost/catsdb'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postgres:postgres@host.docker.internal/catsdb'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = 'temp_img'
 db.init_app(app)
@@ -112,5 +112,6 @@ def resize_image(img: bytes, size: tuple) -> str:
     image.save(buffer, 'png')
     return base64.b64encode(buffer.getvalue()).decode('utf-8')
 
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
