@@ -78,7 +78,6 @@ def sort_cats(sort_type, how, cats_to_sort):
 
 @app.route('/cats/cat_<int:id>')
 def get_cat(id):
-    print(CatsModel.query.filter_by())
     cat = CatsModel.query.get(id)
     return render_template('cat_description.html', cat=cat, img=cat.img.decode('utf-8')) # resize_image(cat.img, (350, 280)))
 
