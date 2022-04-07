@@ -10,7 +10,7 @@
 Не удалось сделать нормальный dump БД в контейнер. На хосте работает безукоризненно, на других машинах ругается. 
 Пробовал делать несколько дампов разными способами: через команды docker, через docker-compose.yaml, через СУБД.
 В репозитории лежат дампы с расширением .sql на всякий случай:
-- pg_dump_backup.sql через docker docker exec <container> pg_dump ... ;
+- pg_dump_backup.sql через docker exec <container> pg_dump ... ;
 - pg_dumpall_backup.sql через docker docker exec <container> pg_dumpall ... ;
 - postgres_data_backup.sql полный бекап через pgAdmin4.
 
